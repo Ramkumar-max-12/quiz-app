@@ -34,7 +34,7 @@ pipeline {
                script {
                   
                    // Run the app as a container and expose it on port 8080
-                   sh "docker run -d -p 2000:80 ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
+                   bat "docker run -d -p 2000:80 ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
                }
            }
        }
