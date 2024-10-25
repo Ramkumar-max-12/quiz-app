@@ -32,9 +32,9 @@ pipeline {
        stage('Deploy to Localhost') {
            steps {
                script {
-                  sh "docker pull ${DOCKER_HUB_REPO}:{env.BUILD}"
+                  
                    // Run the app as a container and expose it on port 8080
-                   sh "docker run -d -p 8081:3000 ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
+                   sh "docker run -d -p 2000:80 ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
                }
            }
        }
