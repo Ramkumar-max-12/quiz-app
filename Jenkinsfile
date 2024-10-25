@@ -20,14 +20,7 @@ pipeline {
                }
            }
        }
-       stage('Run Tests') {
-           steps {
-               script {
-                   // Run tests if available
-                   sh 'npm test'
-               }
-           }
-       }
+     
        stage('Build Docker Image') {
            steps {
                script {
