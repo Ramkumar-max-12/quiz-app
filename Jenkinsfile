@@ -39,13 +39,5 @@ pipeline {
            }
        }
    }
-   post {
-       always {
-           // Clean up workspace and remove Docker images to free space
-           cleanWs()
-           script {
-               bat "docker rmi ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
-           }
-       }
-   }
+  
 }
