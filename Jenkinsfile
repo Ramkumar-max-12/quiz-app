@@ -16,7 +16,7 @@ pipeline {
            steps {
                script {
                    // Install Node.js dependencies
-                   sh 'npm install'
+                   sh 'sudo npm install'
                }
            }
        }
