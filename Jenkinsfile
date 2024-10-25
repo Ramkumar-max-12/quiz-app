@@ -44,7 +44,7 @@ pipeline {
            // Clean up workspace and remove Docker images to free space
            cleanWs()
            script {
-               sh "docker rmi ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
+               bat "docker rmi ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
            }
        }
    }
