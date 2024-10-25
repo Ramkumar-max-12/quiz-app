@@ -1,69 +1,50 @@
 pipeline {
    agent any
    environment {
-       DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-       DOCKER_IMAGE = 'ramkumarmax12/quiz-app'
+       DOCKER_HUB_REPO = 'ramkumarmax12/quiz-app'
+       DOCKER_HUB_CREDENTIALS_ID = 'dockerhub' // Add Docker credentials in Jenkins
    }
    stages {
        stage('Clone Repository') {
            steps {
-               git 'https://github.com/Ramkumar-max-12/quiz-app.git'
-           }
-       }
-       stage('Check Node Version') {
-           steps {
-               sh 'node --version'
-           }
-       }
-       stage('Install Dependencies') {
-           steps {
-               script {
-                   // Add 'sudo' if permissions are an issue
-                 
-                   sh 'sudo npm install'
-               }
+               // Clone the repository
+               git branch: 'master', url: 'https://github.com/Ramkumar-max-12/quiz-app.git'
            }
        }
        stage('Build Docker Image') {
            steps {
+               // Build Docker image
                script {
-                   // Debug Docker command
-                   sh 'docker version'
-                   sh 'docker build -t $DOCKER_IMAGE:${env.BUILD_ID} .'
+                   docker.build("${DOCKER_HUB_REPO}:${env.BUILD_ID}")
                }
            }
        }
-       stage('Push to Docker Hub') {
+       stage('Push Docker Image') {
            steps {
+               // Log in and push image to Docker Hub
                script {
-                   // Log in to Docker Hub and push image
-                   sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                   sh 'docker push $DOCKER_IMAGE:${env.BUILD_ID}'
+                   docker.withRegistry('', DOCKER_HUB_CREDENTIALS_ID) {
+                       docker.image("${DOCKER_HUB_REPO}:${env.BUILD_ID}").push()
+                   }
                }
            }
        }
-       stage('Deploy') {
+       stage('Deploy to Localhost') {
            steps {
                script {
-                   // Stop and deploy the Docker container
-                   sh 'docker stop quiz-app || true && docker rm quiz-app || true'
-                   sh 'docker run -d -p 7000:80 --name quiz-app $DOCKER_IMAGE:${env.BUILD_ID}'
+                   // Run the app as a container and expose it on port 8080
+                   sh "docker run -d -p 8080:3000 ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
                }
            }
        }
    }
    post {
        always {
-           // Clean up
+           // Clean up workspace and remove Docker images to free space
+           cleanWs()
            script {
-               sh 'docker rmi $DOCKER_IMAGE:${env.BUILD_ID} || true'
+               sh "docker rmi ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
            }
-       }
-       success {
-           echo 'Build and deployment successful!'
-       }
-       failure {
-           echo 'Build or deployment failed.'
        }
    }
 }
