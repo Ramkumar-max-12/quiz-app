@@ -33,7 +33,7 @@ pipeline {
            steps {
                script {
                    // Run the app as a container and expose it on port 8080
-                   sh "docker run -d -p 8080:3000 ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
+                   sh "docker run -d -p 7000:80 ${DOCKER_HUB_REPO}:${env.BUILD_ID}"
                }
            }
        }
